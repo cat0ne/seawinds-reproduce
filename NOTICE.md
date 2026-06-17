@@ -30,5 +30,6 @@ from the competition's public starting kit and remain subject to the starting ki
 ## Scope
 
 This is a curated, public **reproduction** package. Competition-day leaderboard-operations
-material (live-board monitoring, defensive playbooks) has been intentionally omitted; the
-technical method, the build pipeline, and the full version-by-version logbook are included.
+material (live-board monitoring, competitor tracking, the development logbook) has been
+intentionally omitted; the technical method, the full build pipeline, the per-hop checksums,
+and runnable verification are included.

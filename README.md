@@ -4,10 +4,9 @@ Full traceability and reproduction of the **first-place submission** for the
 **Sea Winds Predictions** competition (Codabench Phase 1, #13821):
 `submission_FINAL_BEST.zip`.
 
-This repository contains the code, the complete build trace ("the logbook"), and runnable
-verification so that the winning artifact can be **confirmed byte-for-byte** and
-**regenerated from its inputs**, with every hop from the raw dataset documented and
-checksum-anchored.
+This repository contains the code, the full build DAG, and runnable verification so that the
+winning artifact can be **confirmed byte-for-byte** and **regenerated from its inputs**, with
+every hop from the raw dataset documented and checksum-anchored.
 
 ```
 sha256(submission_FINAL_BEST.zip)        = 0d8c48ac…b7cd7
@@ -56,8 +55,8 @@ handful of disjoint, center-frozen width overlays grafted on. See
 [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) for the full story (Winkler asymmetry, the von
 Mises direction-width calibration, compounding, and the dead-ends).
 
-The 36 per-cell hidden scores for the final artifact are recorded in
-[`docs/logbook/log.json`](docs/logbook/log.json) (entry `final_best_797583`).
+The exact cells changed by each overlay, and the per-hop checksums, are in
+[`CHECKSUMS.md`](CHECKSUMS.md) and [`docs/PIPELINE.md`](docs/PIPELINE.md).
 
 ---
 
@@ -73,10 +72,7 @@ seawinds-reproduce/
 ├── docs/
 │   ├── METHODOLOGY.md             ← plain-English overview of the method (with diagrams)
 │   ├── PIPELINE.md                ← the full from-scratch procedure, tier by tier
-│   ├── BASELINE_PROVENANCE.md     ← which lineage each of the 36 cells comes from
-│   └── logbook/
-│       ├── EXPERIMENT_LOG.md      ← THE TRACE: every version, narrative (13k lines)
-│       └── log.json               ← 209 submission records: provenance, scores, checksums
+│   └── BASELINE_PROVENANCE.md     ← which lineage each of the 36 cells comes from
 ├── pipeline/
 │   ├── heavy/                     ← Tier 4: raw → heavy-notebook base (frozen center)
 │   ├── lineage/                   ← Tier 3: heavy base → production base (deep overlay lineage)
@@ -104,8 +100,9 @@ Full detail in [`docs/PIPELINE.md`](docs/PIPELINE.md). Summary:
 | **4. Heavy root** | raw → heavy base | raw + features | deterministic, version-sensitive |
 
 Tiers 0 and 1 are verified **in this repo** against the real artifact (numerically identical
-final hop; byte-exact speed-shrink hop). Tiers 2–4 are fully scripted and traced in the
-logbook; a cold rebuild from raw is deterministic but **library-version sensitive** (a 1-ULP
+final hop; byte-exact speed-shrink hop). Tiers 2–4 are fully scripted and traced in
+[`docs/PIPELINE.md`](docs/PIPELINE.md); a cold rebuild from raw is deterministic but
+**library-version sensitive** (a 1-ULP
 drift at the CatBoost/LightGBM root changes the final `sha256` though not the scores) — which
 is exactly why the canonical artifact is sha-pinned and shipped rather than assumed
 byte-reproducible from a fresh environment.
@@ -125,17 +122,21 @@ Unzip to `data/phase1_dataset/`.
 
 ---
 
-## The logbook = the from-scratch trace
+## The build trace
 
-The single source of truth for "how was this built, step by step" is the **logbook**:
+The step-by-step record of how the artifact is built is:
 
-- [`docs/logbook/EXPERIMENT_LOG.md`](docs/logbook/EXPERIMENT_LOG.md) — the running narrative
-  of every version: what changed, the hidden-board read, keep-or-revert decision, and the
-  reasoning.
-- [`docs/logbook/log.json`](docs/logbook/log.json) — 209 machine-readable submission records,
-  each with its variant, description, per-cell leaderboard scores, and checksums.
+- [`docs/PIPELINE.md`](docs/PIPELINE.md) — the full from-raw build DAG, tier by tier, with
+  exact commands and the determinism caveats.
+- [`CHECKSUMS.md`](CHECKSUMS.md) — every artifact's `sha256` and the per-hop verification
+  status (byte-exact / numerically identical / structural).
+- [`docs/BASELINE_PROVENANCE.md`](docs/BASELINE_PROVENANCE.md) — which lineage each of the 36
+  cells comes from, and the "trained on the wrong baseline" failures that shaped the rules.
 
-Every artifact `sha256` in [`CHECKSUMS.md`](CHECKSUMS.md) cross-references a logbook entry.
+> The author also keeps a full version-by-version development logbook (every submission, its
+> hidden-board read, and keep/revert decision). It is **not** published here because it
+> contains live competition-operations data (competitors' board positions); it can be shared
+> privately on request.
 
 ---
 
@@ -146,11 +147,10 @@ Every artifact `sha256` in [`CHECKSUMS.md`](CHECKSUMS.md) cross-references a log
   `reproduce_final_best.py` / `pipeline/overlays/build_final_best.py`, and the upstream
   speed-shrink hop reproduces **byte-for-byte**.
 - **The full from-raw chain is deterministic but version-sensitive** at the ML-model root;
-  it is scripted (`pipeline/`) and traced (the logbook), with the caveats spelled out in
-  `docs/PIPELINE.md §7`.
+  it is scripted (`pipeline/`) and traced (`docs/PIPELINE.md`), with the caveats spelled out
+  in `docs/PIPELINE.md §7`.
 - **Public ranks need the live board.** Local scoring reproduces per-cell *scores*; the
-  per-cell *ranks* (and thus the headline mean rank) come from the live competition and are
-  captured in the logbook.
+  per-cell *ranks* (and thus the headline mean rank) come from the live competition.
 
 ---
 

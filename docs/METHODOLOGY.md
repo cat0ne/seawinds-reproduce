@@ -199,8 +199,7 @@ flowchart TD
 ```
 
 The compounding chain that produced the final submission, with every hop and its checksum,
-is documented in [`PIPELINE.md`](PIPELINE.md). The full version-by-version trace lives in
-[`logbook/EXPERIMENT_LOG.md`](logbook/EXPERIMENT_LOG.md) and [`logbook/log.json`](logbook/log.json).
+is documented in [`PIPELINE.md`](PIPELINE.md) and [`../CHECKSUMS.md`](../CHECKSUMS.md).
 
 ---
 
@@ -220,7 +219,7 @@ is documented in [`PIPELINE.md`](PIPELINE.md). The full version-by-version trace
 ---
 
 *See also: [`PIPELINE.md`](PIPELINE.md) (the exact build DAG, hop by hop, with checksums)
-and [`logbook/EXPERIMENT_LOG.md`](logbook/EXPERIMENT_LOG.md) (the full version-by-version trace).*
+and [`../CHECKSUMS.md`](../CHECKSUMS.md) (every artifact's sha256 + per-hop verification).*
 
 > This is the public reproduction copy of the methodology. Sections describing
 > competition-day leaderboard operations have been omitted; the technical method and the

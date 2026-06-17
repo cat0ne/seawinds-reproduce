@@ -5,11 +5,10 @@ first-place submission, and tells you exactly which parts you can re-run, how, a
 what fidelity. Read [`METHODOLOGY.md`](METHODOLOGY.md) first for *why* the pipeline looks
 the way it does; this file is the *how*.
 
-The authoritative version-by-version trace of the entire campaign is the **logbook**:
-[`logbook/EXPERIMENT_LOG.md`](logbook/EXPERIMENT_LOG.md) (narrative, every version) and
-[`logbook/log.json`](logbook/log.json) (machine-readable, 209 submission records with
-provenance, scores, and checksums). When this document says "see the logbook," that is
-the primary source — it retraces everything.
+This document plus [`../CHECKSUMS.md`](../CHECKSUMS.md) and the verbatim build scripts under
+[`../pipeline/`](../pipeline/) are the build trace: the DAG, every artifact's `sha256`, and
+the exact, runnable transforms. (A full version-by-version development logbook exists but is
+kept private — it contains live competition-operations data; it can be shared on request.)
 
 ---
 
@@ -154,8 +153,8 @@ This is Tier 1 minus the last hop, starting one step earlier:
 3. `build_ecs_d14_reposition.py` → `ecs_d14_reposition` (needs raw ECS train parquet).
 4. `build_speed_shrink.py 0.08` → `speedshrink_s08` ≡ BEST_FLOOR.
 
-The exact cells, fractions, and rationale for each are in the script docstrings and in the
-logbook entries for `v256`, `dirshrink_combined`, `ecs_d14_reposition`, and the `BEST_FLOOR`.
+The exact cells, fractions, and rationale for each are in the script docstrings (and in
+[`../CHECKSUMS.md`](../CHECKSUMS.md) for the per-hop checksums).
 
 ---
 
@@ -172,10 +171,9 @@ python pipeline/lineage/reproduce_v222_plus_v227_plus_v232.py        # verify-on
 The production base is **sha-pinned** (`13c9fa05…`). Its deep per-version lineage modules
 (the ~200 exploration scripts in the original project's `src/experiments/`) embed live
 competitor leaderboard snapshots and are therefore **not redistributed in this clean public
-package**; the lineage entry point above is included for reference, and the authoritative,
-step-by-step record of every version — what changed, the hidden-board read, and the
-keep-or-revert decision — is the **logbook** (`docs/logbook/`). Each overlay in the lineage
-is a single-cell, center-frozen width change. A full cold re-run from raw needs the 21 GB
+package**; the lineage entry point above is included for reference. Each overlay in the
+lineage is a single-cell, center-frozen width change, recorded with its checksum in
+[`../CHECKSUMS.md`](../CHECKSUMS.md). A full cold re-run from raw needs the 21 GB
 dataset and the heavy models and is **library-version sensitive** (see §7); this is why the
 production base and the final artifact are sha-pinned rather than assumed byte-reproducible
 from a fresh environment.
@@ -210,8 +208,7 @@ library versions** — see §7.
 The competition metric is the (circular) Winkler score per cell, ranked across teams, then
 averaged. A faithful local implementation is in `src/scoring/` (`winkler.py`, `evaluate.py`).
 Because the per-cell *ranks* depend on every competitor's submission, you can reproduce the
-per-cell **scores** locally but not the public *ranks* (those need the live board, captured
-in the logbook).
+per-cell **scores** locally but not the public *ranks* (those need the live board).
 
 ---
 
@@ -262,8 +259,8 @@ production base.
 - **Feature engineering is a prerequisite** of Tier 4 and was not re-audited for determinism
   here.
 - **Ranks need the board.** Local scoring gives per-cell scores; the leaderboard ranks that
-  define "first place" come from the live competition and are captured in the logbook.
+  define "first place" come from the live competition.
 
 If your goal is "prove this is the winning file" → Tier 0. If it is "rebuild the final
 result from a base" → Tier 1. If it is "cold rebuild from raw" → Tiers 4→1, accepting the
-version-sensitivity above, with the logbook as the authoritative step-by-step trace.
+version-sensitivity above, using this document and `CHECKSUMS.md` as the step-by-step trace.

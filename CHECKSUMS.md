@@ -68,9 +68,9 @@ predictions_FINAL_BEST.csv                     sha 5eed32b3…   ← FIRST PLACE
 | raw → production base | `reproduce_v222_plus_v227_plus_v232.py` | needs 21 GB raw + heavy models | not re-run here | deterministic, **library-version-sensitive** |
 | raw → heavy root | heavy notebook (seed 42) | needs raw + features | not re-run here | deterministic, **library-version-sensitive** |
 
-"Structural" = confirmed from the logbook (`docs/logbook/`) + the builder source, and (for
-the on-disk hops) by column-level CSV diffing, but not re-run end-to-end here because the
-exact input CSV is not retained on disk.
+"Structural" = confirmed from the build provenance + the builder source, and (for the
+on-disk hops) by column-level CSV diffing, but not re-run end-to-end here because the exact
+input CSV is not retained on disk.
 
 ## Reproduce these checks yourself
 
