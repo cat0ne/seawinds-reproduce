@@ -32,26 +32,26 @@ The Winkler score uses only the `[05, 95]` interval; `q50` / `dir_50` are score-
 raw phase1_dataset  (Zenodo / Codabench 13821)
   │  feature engineering  (starting-kit 1_feature_engineering.ipynb)
   ▼
-features/  →  HEAVY NOTEBOOK  (2d_starting_kit_heavy.ipynb / pipeline/heavy/_heavy_extracted.py, seed=42)
+features/  →  HEAVY NOTEBOOK  (2d_starting_kit_heavy.ipynb / scripts/heavy/_heavy_extracted.py, seed=42)
   ▼
 predictions_heavy.csv                          frozen-center root  (290 MB)
   │  deep lineage v26→v51→…→v196→v222→v227→v232
-  │  pipeline/lineage/reproduce_v222_plus_v227_plus_v232.py
+  │  scripts/reproduce_v222_plus_v227_plus_v232.py
   ▼
 submission_v222_plus_v227_plus_v232.zip        sha 13c9fa05…   PRODUCTION BASE
-  │  pipeline/overlays/build_final_day_station_ladder.py   (Dir NS Sta d1 + WS ECS Surf d1)
+  │  scripts/build_final_day_station_ladder.py   (Dir NS Sta d1 + WS ECS Surf d1)
   ▼
 predictions_v256_…csv                          (intermediate; not retained on disk)
-  │  pipeline/overlays/build_dir_shrink.py 0.12   (4 disjoint direction cells)
+  │  scripts/build_dir_shrink.py 0.12   (4 disjoint direction cells)
   ▼
 predictions_dirshrink_combined.csv             sha 8b4347ec…
-  │  pipeline/overlays/build_ecs_d14_reposition.py   (ECS Surf d14 climatological arcs; needs raw ECS train parquet)
+  │  scripts/build_ecs_d14_reposition.py   (ECS Surf d14 climatological arcs; needs raw ECS train parquet)
   ▼
 predictions_ecs_d14_reposition.csv             sha 0cbdf30e…
-  │  pipeline/overlays/build_speed_shrink.py 0.08    (ECS Sta/Surf d14 speed)
+  │  scripts/build_speed_shrink.py 0.08    (ECS Sta/Surf d14 speed)
   ▼
 predictions_speedshrink_s08.csv  ≡ BEST_FLOOR  sha d95e4dd5…   (zip sha 17bde403…)
-  │  pipeline/overlays/build_final_best.py           (Dir NS Pres d7 12% → 20%)
+  │  scripts/build_final_best.py           (Dir NS Pres d7 12% → 20%)
   ▼
 predictions_FINAL_BEST.csv                     sha 5eed32b3…   ← FINAL SUBMISSION (public #3)
 ```

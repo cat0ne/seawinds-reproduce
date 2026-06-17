@@ -72,17 +72,17 @@ file. (The raw file `sha256` differs only in cosmetic decimal formatting — see
 
 `submission_BEST_FLOOR.zip` is an **intermediate result**, hosted only so this step runs
 without the 21 GB raw download. Its provenance is code in this repository — every hop that
-produces it has a script under [`pipeline/`](pipeline/), and every artifact's checksum and
+produces it has a script under [`scripts/`](scripts/), and every artifact's checksum and
 producing script is tabulated in [`CHECKSUMS.md`](CHECKSUMS.md):
 
 | Intermediate result | produced by | from | needs |
 |---|---|---|---|
-| `predictions_speedshrink_s08.csv` (= BEST_FLOOR) | `pipeline/overlays/build_speed_shrink.py 0.08` | `ecs_d14_reposition` | pure arithmetic (byte-exact) |
-| `predictions_ecs_d14_reposition.csv` | `pipeline/overlays/build_ecs_d14_reposition.py` | `dirshrink_combined` | raw ECS train parquet (climatology) |
-| `predictions_dirshrink_combined.csv` | `pipeline/overlays/build_dir_shrink.py 0.12` | `v256` | pure arithmetic |
-| `predictions_v256_…csv` | `pipeline/overlays/build_final_day_station_ladder.py` | production base | deterministic |
-| `submission_v222_plus_v227_plus_v232` (production base) | `pipeline/lineage/reproduce_v222_plus_v227_plus_v232.py` | heavy root | 21 GB raw + heavy models |
-| `predictions_heavy.csv` (heavy root) | `pipeline/heavy/` (`_heavy_extracted.py` / notebook) | raw dataset | 21 GB raw + features |
+| `predictions_speedshrink_s08.csv` (= BEST_FLOOR) | `scripts/build_speed_shrink.py 0.08` | `ecs_d14_reposition` | pure arithmetic (byte-exact) |
+| `predictions_ecs_d14_reposition.csv` | `scripts/build_ecs_d14_reposition.py` | `dirshrink_combined` | raw ECS train parquet (climatology) |
+| `predictions_dirshrink_combined.csv` | `scripts/build_dir_shrink.py 0.12` | `v256` | pure arithmetic |
+| `predictions_v256_…csv` | `scripts/build_final_day_station_ladder.py` | production base | deterministic |
+| `submission_v222_plus_v227_plus_v232` (production base) | `scripts/reproduce_v222_plus_v227_plus_v232.py` | heavy root | 21 GB raw + heavy models |
+| `predictions_heavy.csv` (heavy root) | `scripts/heavy/` (`_heavy_extracted.py` / notebook) | raw dataset | 21 GB raw + features |
 
 So the floor can be rebuilt from the raw dataset through these scripts (Step 3); hosting it
 just lets you verify the final transformation first, offline. The full hop-by-hop procedure
@@ -95,7 +95,7 @@ and the determinism caveats are in [`docs/PIPELINE.md`](docs/PIPELINE.md).
 You hold the raw competition dataset, so you can rebuild the whole chain. The complete,
 tier-by-tier procedure — raw data → engineered features → heavy-notebook base → compounding
 overlays → `FINAL_BEST` — is in **[`docs/PIPELINE.md`](docs/PIPELINE.md)**, with the exact
-scripts under [`pipeline/`](pipeline/) and every artifact's checksum in
+scripts under [`scripts/`](scripts/) and every artifact's checksum in
 [`CHECKSUMS.md`](CHECKSUMS.md).
 
 Read `docs/PIPELINE.md` §7 first: the model-training root (CatBoost/LightGBM, fixed seeds) is

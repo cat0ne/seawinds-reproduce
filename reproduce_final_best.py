@@ -5,7 +5,7 @@ This is the runnable, self-contained proof of the *final* hop of the pipeline
 (BEST_FLOOR -> FINAL_BEST). It:
 
   1. Rebuilds ``predictions_final_best.csv`` from the floor base CSV using the
-     exact, verified arc-shrink in ``pipeline/overlays/build_final_best.py``.
+     exact, verified arc-shrink in ``scripts/build_final_best.py``.
   2. If you pass ``--canonical`` (the real ``predictions_FINAL_BEST.csv`` or the
      ``submission_FINAL_BEST.zip``), it compares the two and reports:
        - sha256 of each,
@@ -32,7 +32,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / "pipeline" / "overlays"))
+sys.path.insert(0, str(ROOT / "scripts"))
 import build_final_best as bfb  # noqa: E402
 
 # Pinned canonical checksums (the final submission).

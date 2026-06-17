@@ -69,7 +69,8 @@ The exact cells changed by each overlay, and the per-hop checksums, are in
 ```
 seawinds-reproduce/
 ├── README.md                      ← you are here
-├── REPRODUCE.md                   ← step-by-step guide for the organiser (verify / regenerate / rebuild)
+├── REPRODUCE.md                   ← organiser guide (verify / regenerate / rebuild)
+├── reproduce_from_raw.py          ← end-to-end orchestrator: drives the whole DAG with a checksum gate per hop
 ├── reproduce_final_best.py        ← regenerate FINAL_BEST from the floor + verify (numerical identity)
 ├── verify_artifact.py             ← verify any submission against the pinned sha256 registry
 ├── CHECKSUMS.md                   ← every artifact's sha256 + the verified build DAG
@@ -77,12 +78,13 @@ seawinds-reproduce/
 ├── docs/
 │   ├── METHODOLOGY.md             ← plain-English overview of the method (with diagrams)
 │   ├── PIPELINE.md                ← the full from-scratch procedure, tier by tier
+│   ├── END_TO_END.md              ← the single end-to-end run (reproduce_from_raw.py) walkthrough
 │   └── BASELINE_PROVENANCE.md     ← which lineage each of the 36 cells comes from
-├── pipeline/
-│   ├── heavy/                     ← Tier 4: raw → heavy-notebook base (frozen center)
-│   ├── lineage/                   ← Tier 3: heavy base → production base (deep overlay lineage)
-│   └── overlays/                  ← Tiers 1–2: production base → FINAL_BEST (incl. build_final_best.py)
-└── src/scoring/                   ← faithful Winkler / circular-Winkler scorer (optional local scoring)
+├── scripts/                       ← the runnable pipeline
+│   ├── heavy/                     ← raw → heavy-notebook base (frozen center)
+│   ├── reproduce_v222_plus_v227_plus_v232.py   ← v51 → production base (deep-lineage driver)
+│   └── build_*.py                 ← production base → v256 → … → FINAL_BEST (overlay builders)
+└── src/                           ← the engine the lineage imports (experiments, pipeline, models, scoring)
 ```
 
 The big artifacts (the 134 MB `.zip`, the ~419 MB CSVs, and the 21 GB raw dataset) are **not**
@@ -112,6 +114,29 @@ final hop; byte-exact speed-shrink hop). Tiers 2–4 are fully scripted and trac
 drift at the CatBoost/LightGBM root changes the final `sha256` though not the scores) — which
 is exactly why the canonical artifact is sha-pinned and shipped rather than assumed
 byte-reproducible from a fresh environment.
+
+---
+
+## Run the whole pipeline with one command
+
+[`reproduce_from_raw.py`](reproduce_from_raw.py) is a single orchestrator that encodes
+**every** stage of the DAG (raw → features → heavy → v51 → production base → overlays →
+`FINAL_BEST`) and applies a `sha256` gate after each hop. Point it at a working tree that
+has the code (this repo) plus the raw data:
+
+```bash
+# non-destructive: locate each stage's output and check its checksum
+python reproduce_from_raw.py --root /path/to/working-tree --mode verify
+
+# destructive: actually execute each producer in order, with a checksum gate per hop
+python reproduce_from_raw.py --root /path/to/working-tree --mode run
+```
+
+`verify` against a complete tree reports every retained artifact `VERIFIED ✅` against its
+pinned checksum (the one transient intermediate, `v256`, is not kept on disk). The full
+walkthrough — the 9 stages, both modes, the expected output, how to assemble the working
+tree, and the honest limits (the external feature step and the two version-sensitive ML
+checkpoints) — is in **[`docs/END_TO_END.md`](docs/END_TO_END.md)**.
 
 ---
 
@@ -146,10 +171,10 @@ The step-by-step record of how the artifact is built is:
 
 - **The artifact is exact.** `verify_artifact.py` confirms you hold the third-place bytes.
 - **The final result regenerates exactly** (numerically) from its base via
-  `reproduce_final_best.py` / `pipeline/overlays/build_final_best.py`, and the upstream
+  `reproduce_final_best.py` / `scripts/build_final_best.py`, and the upstream
   speed-shrink hop reproduces **byte-for-byte**.
 - **The full from-raw chain is deterministic but version-sensitive** at the ML-model root;
-  it is scripted (`pipeline/`) and traced (`docs/PIPELINE.md`), with the caveats spelled out
+  it is scripted (`scripts/`) and traced (`docs/PIPELINE.md`), with the caveats spelled out
   in `docs/PIPELINE.md §7`.
 - **Public ranks need the live board.** Local scoring reproduces per-cell *scores*; the
   per-cell *ranks* (and thus the headline mean rank) come from the live competition.

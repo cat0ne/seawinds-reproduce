@@ -26,7 +26,7 @@ Their `sha256` checksums are pinned in [`CHECKSUMS.md`](CHECKSUMS.md).
 ## Code
 
 Reproduction and pipeline code in this repository is provided for verifying and reproducing
-the submission. Portions of the heavy-base code under `pipeline/heavy/` are derived from the
+the submission. Portions of the heavy-base code under `scripts/heavy/` are derived from the
 competition's public starting kit and remain subject to the starting kit's terms.
 
 ## Scope
