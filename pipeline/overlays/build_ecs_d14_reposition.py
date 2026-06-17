@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ECS d14 direction arc REPOSITION (hail-mary for #1).
+"""ECS d14 direction arc REPOSITION.
 
 The 3 ECS d14 direction cells regressed under symmetric shrink (+9 to +18),
 meaning their arcs are MIS-CENTERED (truth mass off-center, heavy tails), not

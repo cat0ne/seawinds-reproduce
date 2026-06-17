@@ -11,7 +11,7 @@ new misses -> lower score -> rank flip. Same over-coverage logic that worked for
 direction; d14 cells have no forecast skill so the over-coverage is genuine.
 
 Targets ONLY over-covered ECS speed cells we trail. Stacks on the reposition
-base (so one upload tests speed-shrink + dir-reposition toward board 4.028/#1).
+base (so one upload tests speed-shrink + dir-reposition together).
 
 HIDDEN probe (offline VAL untrustworthy). Read per-cell, keep winners.
 Usage: build_speed_shrink.py <s>   (default 0.08)

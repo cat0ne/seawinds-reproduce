@@ -6,7 +6,7 @@ These packets are deliberately scoped but aggressive:
 * v243-v246 are a ladder of extra center-frozen North Sea station d1 direction
   interval shrinks on top of the current production base. v227 proved this
   target can improve hidden scoring, but the June 14 board needs a larger move
-  to flip rank 1.
+  to climb the public rank.
 * v247/v252 combine the rank-flip station ladder point with the two d1
   speed-width probes that still have real local CSV deltas. The speed probes
   are not route-positive on the fresh board alone, so these are explicitly full

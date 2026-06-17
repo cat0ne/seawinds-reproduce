@@ -3,7 +3,7 @@
 
 ``dirshrink_combined`` proved four selective direction shrinks were raw-positive
 and public-rank-positive/non-worse. The public board after that upload still
-needs roughly five rank positions to catch the leader. This builder keeps the
+needs roughly five rank positions to climb. This builder keeps the
 scored combined base intact and only increases shrink fractions on the same
 winner cells that remain close to public rank boundaries.
 """
