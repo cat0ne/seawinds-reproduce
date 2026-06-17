@@ -5,12 +5,12 @@ Checks the byte-level identity (sha256) of a submission file against the known
 checksums of the chain artifacts, and — for a submission .zip — that the inner
 file is named ``predictions.csv`` and has the expected number of data rows.
 
-This is the byte-level anchor for the first-place artifact: download
+This is the byte-level anchor for the final submission: download
 ``submission_FINAL_BEST.zip`` from the GitHub Release and run
 
     python verify_artifact.py /path/to/submission_FINAL_BEST.zip
 
-A PASS proves you hold the exact bytes that scored first place.
+A PASS proves you hold the exact bytes of the third-place submission.
 
 Usage:
     python verify_artifact.py <file.zip | file.csv> [--expect <name>]
@@ -29,7 +29,7 @@ EXPECTED_DATA_ROWS = 3_448_800
 
 # Pinned sha256 registry for the verified build DAG (see docs/CHECKSUMS.md).
 REGISTRY = {
-    # ----- the first-place artifact -----
+    # ----- the final submission -----
     "submission_FINAL_BEST.zip":        "0d8c48acedf0c2ca85dce2e62ffa5e65a2ab48c891a7af07d6162c3f76bb7cd7",
     "predictions_FINAL_BEST.csv":       "5eed32b3ee381cdd96e6cf2cd0641c900d1b932169e7f191e1b26c107e705bc9",
     # ----- the floor chain (each hop is on-disk verifiable) -----

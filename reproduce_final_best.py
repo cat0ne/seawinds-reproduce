@@ -35,7 +35,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "pipeline" / "overlays"))
 import build_final_best as bfb  # noqa: E402
 
-# Pinned canonical checksums (the first-place artifact).
+# Pinned canonical checksums (the final submission).
 CANONICAL_CSV_SHA256 = "5eed32b3ee381cdd96e6cf2cd0641c900d1b932169e7f191e1b26c107e705bc9"
 CANONICAL_ZIP_SHA256 = "0d8c48acedf0c2ca85dce2e62ffa5e65a2ab48c891a7af07d6162c3f76bb7cd7"
 SCORE_IDENTICAL_TOL_DEG = 1e-9

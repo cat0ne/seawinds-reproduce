@@ -1,7 +1,7 @@
 # PIPELINE — full from-scratch reproduction
 
 This document traces the **complete** path from the raw competition dataset to the
-first-place submission, and tells you exactly which parts you can re-run, how, and to
+third-place submission, and tells you exactly which parts you can re-run, how, and to
 what fidelity. Read [`METHODOLOGY.md`](METHODOLOGY.md) first for *why* the pipeline looks
 the way it does; this file is the *how*.
 
@@ -85,7 +85,7 @@ python verify_artifact.py submission_FINAL_BEST.zip
 # PASS   : matches pinned 'submission_FINAL_BEST.zip'.
 ```
 
-A PASS proves you hold the exact bytes that scored first place.
+A PASS proves you hold the exact bytes of the third-place submission.
 
 ---
 
@@ -104,7 +104,7 @@ predictions_v256_…csv
        replace Dir ECS Surf d14 arcs with climatological 90% arcs  (needs raw ECS train parquet)
   └─ build_speed_shrink.py 0.08        → predictions_speedshrink_s08.csv      (sha d95e4dd5…) ≡ BEST_FLOOR
        center-frozen speed shrink on q05/q95 of ECS Sta d14 + ECS Surf d14
-  └─ build_final_best.py               → predictions_FINAL_BEST.csv           (sha 5eed32b3…) ← FIRST PLACE
+  └─ build_final_best.py               → predictions_FINAL_BEST.csv           (sha 5eed32b3…) ← FINAL SUBMISSION (public #3)
        center-frozen arc shrink on Dir NS Pres d7 only, 12% → 20%
 ```
 
@@ -259,8 +259,8 @@ production base.
 - **Feature engineering is a prerequisite** of Tier 4 and was not re-audited for determinism
   here.
 - **Ranks need the board.** Local scoring gives per-cell scores; the leaderboard ranks that
-  define "first place" come from the live competition.
+  (and the final standings) come from the live competition.
 
-If your goal is "prove this is the winning file" → Tier 0. If it is "rebuild the final
+If your goal is "prove this is the submission" → Tier 0. If it is "rebuild the final
 result from a base" → Tier 1. If it is "cold rebuild from raw" → Tiers 4→1, accepting the
 version-sensitivity above, using this document and `CHECKSUMS.md` as the step-by-step trace.

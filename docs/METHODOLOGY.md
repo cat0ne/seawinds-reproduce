@@ -1,7 +1,7 @@
 # Sea Winds — Methodology & Approach
 
-A plain-English overview of how we got to **#1** on the Sea Winds wind-forecasting
-competition (Codabench Phase 1), followed by the technical detail.
+A plain-English overview of the approach behind our final Sea Winds submission (Codabench
+Phase 1) — which finished **3rd** on the public leaderboard — followed by the technical detail.
 
 > **One-sentence summary:** We start from a strong set of baseline forecasts, leave the
 > predicted *values* untouched, and instead **re-calibrate the uncertainty intervals
@@ -129,7 +129,7 @@ flowchart LR
 
 **Detail.** Each overlay writes only its cell's columns onto the base; a scope check
 guarantees no other cell, and no frozen center, changes. Our best submission **v218**
-bundles five such overlays and scores our best mean rank (~3.35, #1).
+bundles five such overlays and scores our best mean rank (~3.35).
 
 ### 3.3 Reasoning in ranks, not scores
 

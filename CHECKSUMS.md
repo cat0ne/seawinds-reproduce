@@ -1,9 +1,9 @@
 # Checksums & the verified build DAG
 
-Every artifact on the path to the first-place submission, with its `sha256`, and
+Every artifact on the path to the third-place submission, with its `sha256`, and
 the verification status of each hop. All hashes are over the exact files described.
 
-## The first-place artifact
+## The submission (public 3rd place)
 
 | Artifact | sha256 | Notes |
 |---|---|---|
@@ -26,7 +26,7 @@ A row's scored "cell" (1 of 36) is derived, not stored:
 The Winkler score uses only the `[05, 95]` interval; `q50` / `dir_50` are score-irrelevant
 (this is why the whole method can freeze the center and move only the interval edges).
 
-## The build DAG (root → first-place artifact)
+## The build DAG (root → final submission)
 
 ```
 raw phase1_dataset  (Zenodo / Codabench 13821)
@@ -53,7 +53,7 @@ predictions_ecs_d14_reposition.csv             sha 0cbdf30e…
 predictions_speedshrink_s08.csv  ≡ BEST_FLOOR  sha d95e4dd5…   (zip sha 17bde403…)
   │  pipeline/overlays/build_final_best.py           (Dir NS Pres d7 12% → 20%)
   ▼
-predictions_FINAL_BEST.csv                     sha 5eed32b3…   ← FIRST PLACE
+predictions_FINAL_BEST.csv                     sha 5eed32b3…   ← FINAL SUBMISSION (public #3)
 ```
 
 ## Per-hop verification status
@@ -75,7 +75,7 @@ input CSV is not retained on disk.
 ## Reproduce these checks yourself
 
 ```bash
-# Byte-anchor the first-place artifact (after downloading it from the Release):
+# Byte-anchor the submission (after downloading it from the Release):
 python verify_artifact.py /path/to/submission_FINAL_BEST.zip       # -> PASS
 
 # Regenerate FINAL_BEST from the floor and confirm numerical identity:

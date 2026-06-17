@@ -5,7 +5,7 @@ Full traceability and reproduction of the **third-place submission** for the
 `submission_FINAL_BEST.zip`.
 
 This repository contains the code, the full build DAG, and runnable verification so that the
-winning artifact can be **confirmed byte-for-byte** and **regenerated from its inputs**, with
+third-place artifact can be **confirmed byte-for-byte** and **regenerated from its inputs**, with
 every hop from the raw dataset documented and checksum-anchored.
 
 ```
@@ -15,7 +15,7 @@ sha256(inner predictions.csv)            = 5eed32b3…05bc9      (3,448,800 rows
 
 ---
 
-## TL;DR — verify the winning file in 30 seconds
+## TL;DR — verify the submission in 30 seconds
 
 ```bash
 # 1. install the lightweight deps (numpy + pandas + pyarrow)
@@ -26,7 +26,7 @@ python verify_artifact.py submission_FINAL_BEST.zip
 #   PASS : matches pinned 'submission_FINAL_BEST.zip'.
 ```
 
-A `PASS` proves you hold the exact bytes that scored first place.
+A `PASS` proves you hold the exact bytes of the third-place submission.
 
 To **regenerate** the result from its immediate base and confirm it is identical:
 
@@ -50,7 +50,7 @@ cell, and the headline metric is the **average of the 36 ranks**.
 
 The whole approach: **start from strong base forecasts, freeze the center prediction
 (`q50`/`dir_50`), and re-calibrate only the interval *width*, one cell at a time**, using the
-hidden leaderboard to keep what helped. The winning file is the base predictions with a
+hidden leaderboard to keep what helped. The final file is the base predictions with a
 handful of disjoint, center-frozen width overlays grafted on. See
 [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) for the full story (Winkler asymmetry, the von
 Mises direction-width calibration, compounding, and the dead-ends).
@@ -82,7 +82,7 @@ seawinds-reproduce/
 
 The big artifacts (the 134 MB `.zip`, the ~419 MB CSVs, and the 21 GB raw dataset) are **not**
 in the git tree — they exceed GitHub's file limit and the raw data is the competition's own
-(licensed) dataset. The winning `.zip` is attached to the **GitHub Release**; the raw data is
+(licensed) dataset. The final `.zip` is attached to the **GitHub Release**; the raw data is
 downloaded from the official sources (see below).
 
 ---
