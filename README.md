@@ -1,6 +1,6 @@
 # seawinds-reproduce
 
-Full traceability and reproduction of the **first-place submission** for the
+Full traceability and reproduction of the **third-place submission** for the
 **Sea Winds Predictions** competition (Codabench Phase 1, #13821):
 `submission_FINAL_BEST.zip`.
 
