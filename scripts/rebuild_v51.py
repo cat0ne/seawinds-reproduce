@@ -35,6 +35,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -146,11 +147,17 @@ def run_chain(root: Path, start_at: str | None) -> int:
         if rc != 0:
             print(f"      FAIL: producer for {s.ver} exited {rc}")
             return 2
-        produced = out_csv(root, s.ver)
-        if not produced.exists():
-            print(f"      FAIL: expected {produced.relative_to(root)} was not written")
+        # save_submission writes predictions_{ver}.csv to submissions/; downstream steps read
+        # from starting-kit/phase_1/. Stage the output across (as the lineage workflow does).
+        written = root / "submissions" / f"predictions_{s.ver}.csv"
+        if not written.exists():
+            print(f"      FAIL: producer for {s.ver} did not write {written.relative_to(root)}")
             return 2
-        print(f"      ok -> {produced.relative_to(root)}")
+        staged = out_csv(root, s.ver)
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        if written.resolve() != staged.resolve():
+            shutil.copy2(written, staged)
+        print(f"      ok -> {staged.relative_to(root)}")
 
     v51 = out_csv(root, "v51")
     got = sha256_file(v51)
