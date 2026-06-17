@@ -1,0 +1,14 @@
+# Minimal deps for Tier 0 (verify) and Tier 1 (regenerate FINAL_BEST from a base CSV).
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14.0
+
+# For the full from-scratch chain (Tiers 3–4: heavy notebook + deep lineage) also install
+# the starting-kit model stack — see starting-kit/requirements.txt in the original project:
+#   scikit-learn>=1.4
+#   lightgbm>=4.3
+#   catboost>=1.2
+#   xgboost
+#   xarray
+#   netcdf4
+# These are version-sensitive; see docs/PIPELINE.md §7.

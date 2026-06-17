@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Data & large artifacts (never committed — see NOTICE.md / GitHub Release)
+data/
+*.zip
+*.parquet
+*.nc
+predictions_*.csv
+submission_*.csv
+predictions_final_best.csv
+/tmp/
+
+# Logs / scratch
+catboost_info/
+logs/
+*.log
