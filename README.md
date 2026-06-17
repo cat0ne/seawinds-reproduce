@@ -13,6 +13,10 @@ sha256(submission_FINAL_BEST.zip)        = 0d8c48ac…b7cd7
 sha256(inner predictions.csv)            = 5eed32b3…05bc9      (3,448,800 rows)
 ```
 
+> **Reproducing / adjudicating this submission?** Follow **[`REPRODUCE.md`](REPRODUCE.md)** —
+> a short, ordered guide: (1) confirm the submitted file is the exact scored artifact,
+> (2) regenerate it from its published base, (3) rebuild from the raw dataset.
+
 ---
 
 ## TL;DR — verify the submission in 30 seconds
@@ -65,6 +69,7 @@ The exact cells changed by each overlay, and the per-hop checksums, are in
 ```
 seawinds-reproduce/
 ├── README.md                      ← you are here
+├── REPRODUCE.md                   ← step-by-step guide for the organiser (verify / regenerate / rebuild)
 ├── reproduce_final_best.py        ← regenerate FINAL_BEST from the floor + verify (numerical identity)
 ├── verify_artifact.py             ← verify any submission against the pinned sha256 registry
 ├── CHECKSUMS.md                   ← every artifact's sha256 + the verified build DAG
@@ -82,8 +87,9 @@ seawinds-reproduce/
 
 The big artifacts (the 134 MB `.zip`, the ~419 MB CSVs, and the 21 GB raw dataset) are **not**
 in the git tree — they exceed GitHub's file limit and the raw data is the competition's own
-(licensed) dataset. The final `.zip` is attached to the **GitHub Release**; the raw data is
-downloaded from the official sources (see below).
+(licensed) dataset. The final submission `.zip` **and its base** (`submission_BEST_FLOOR.zip`)
+are attached to the **GitHub Release** (both are the author's own prediction outputs); the raw
+data is downloaded from the official sources (see below).
 
 ---
 

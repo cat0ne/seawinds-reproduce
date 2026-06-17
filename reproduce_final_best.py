@@ -85,7 +85,8 @@ def compare(regen_csv: Path, canonical: Path) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--floor", required=True, help="BEST_FLOOR base CSV (predictions_speedshrink_s08.csv)")
+    ap.add_argument("--floor", required=True,
+                    help="BEST_FLOOR base: predictions_speedshrink_s08.csv OR submission_BEST_FLOOR.zip")
     ap.add_argument("--out", default=str(ROOT / "predictions_final_best.csv"), help="regenerated output CSV")
     ap.add_argument("--canonical", help="canonical predictions_FINAL_BEST.csv or submission_FINAL_BEST.zip")
     ap.add_argument("--zip", action="store_true", help="also write submission_final_best.zip")

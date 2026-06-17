@@ -2,9 +2,10 @@
 
 ## Competition data is NOT included
 
-This repository contains **reproduction code, documentation, and checksums only**. It does
-**not** redistribute the competition dataset, the engineered features, or the prediction
-CSVs. The Sea Winds Predictions Phase-1 dataset is the property of the competition organizers
+This git repository contains **reproduction code, documentation, and checksums only**. It
+does **not** redistribute the competition dataset or the engineered features. (The GitHub
+Release separately hosts the author's own submission and base-prediction zips — see below.)
+The Sea Winds Predictions Phase-1 dataset is the property of the competition organizers
 and is provided under the terms of the competition / its Zenodo record. Download it from the
 official sources:
 
@@ -17,15 +18,16 @@ the modeling task; the dataset license governs reuse).
 
 ## The submission artifact
 
-`submission_FINAL_BEST.zip` (attached to this repository's GitHub Release) is the author's own
-competition output — the predictions produced by the pipeline in this repository. Its `sha256`
-checksums are pinned in [`CHECKSUMS.md`](CHECKSUMS.md).
+`submission_FINAL_BEST.zip` (the final submission) and `submission_BEST_FLOOR.zip` (its
+immediate base) are attached to this repository's GitHub Release. Both are the author's own
+prediction outputs produced by the pipeline in this repository — not raw competition data.
+Their `sha256` checksums are pinned in [`CHECKSUMS.md`](CHECKSUMS.md).
 
 ## Code
 
-Reproduction and pipeline code in this repository is released under the MIT License
-([`LICENSE`](LICENSE)). Portions of the heavy-base code under `pipeline/heavy/` are derived
-from the competition's public starting kit and remain subject to the starting kit's terms.
+Reproduction and pipeline code in this repository is provided for verifying and reproducing
+the submission. Portions of the heavy-base code under `pipeline/heavy/` are derived from the
+competition's public starting kit and remain subject to the starting kit's terms.
 
 ## Scope
 

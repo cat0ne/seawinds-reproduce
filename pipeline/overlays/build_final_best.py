@@ -96,8 +96,19 @@ def apply_arc_shrink(chunk: pd.DataFrame, mask: pd.Series, additional_fraction: 
     return int(len(idx))
 
 
+def _floor_chunks(floor_path: Path):
+    """Yield chunks from the floor base, which may be a .csv or a submission .zip."""
+    floor_path = Path(floor_path)
+    if floor_path.suffix == ".zip":
+        with zipfile.ZipFile(floor_path) as zf:
+            with zf.open("predictions.csv") as fh:
+                yield from pd.read_csv(fh, chunksize=CHUNKSIZE, dtype={"level": str}, low_memory=False)
+    else:
+        yield from pd.read_csv(floor_path, chunksize=CHUNKSIZE, dtype={"level": str}, low_memory=False)
+
+
 def build(floor_csv: Path, out_csv: Path, make_zip: bool = False) -> dict:
-    """Regenerate the FINAL_BEST predictions from the BEST_FLOOR base CSV."""
+    """Regenerate the FINAL_BEST predictions from the BEST_FLOOR base (.csv or .zip)."""
     floor_csv = Path(floor_csv)
     out_csv = Path(out_csv)
     if not floor_csv.exists():
@@ -107,7 +118,7 @@ def build(floor_csv: Path, out_csv: Path, make_zip: bool = False) -> dict:
     wrote = False
     total_rows = 0
     changed_rows = 0
-    for chunk in pd.read_csv(floor_csv, chunksize=CHUNKSIZE, dtype={"level": str}, low_memory=False):
+    for chunk in _floor_chunks(floor_csv):
         level = chunk["level"].fillna("").astype(str)
         src = np.where(
             chunk["type"] == "station",
@@ -151,7 +162,8 @@ def sha256_file(path: Path) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--floor", required=True, help="BEST_FLOOR base CSV (predictions_speedshrink_s08.csv)")
+    ap.add_argument("--floor", required=True,
+                    help="BEST_FLOOR base: predictions_speedshrink_s08.csv OR submission_BEST_FLOOR.zip")
     ap.add_argument("--out", default="predictions_final_best.csv", help="output predictions CSV path")
     ap.add_argument("--zip", action="store_true", help="also write submission_final_best.zip")
     args = ap.parse_args()
