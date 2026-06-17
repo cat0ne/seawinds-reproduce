@@ -133,16 +133,12 @@ The step-by-step record of how the artifact is built is:
 - [`docs/BASELINE_PROVENANCE.md`](docs/BASELINE_PROVENANCE.md) — which lineage each of the 36
   cells comes from, and the "trained on the wrong baseline" failures that shaped the rules.
 
-> The author also keeps a full version-by-version development logbook (every submission, its
-> hidden-board read, and keep/revert decision). It is **not** published here because it
-> contains live competition-operations data (competitors' board positions); it can be shared
-> privately on request.
 
 ---
 
 ## Honest reproducibility statement
 
-- **The artifact is exact.** `verify_artifact.py` confirms you hold the first-place bytes.
+- **The artifact is exact.** `verify_artifact.py` confirms you hold the third-place bytes.
 - **The final result regenerates exactly** (numerically) from its base via
   `reproduce_final_best.py` / `pipeline/overlays/build_final_best.py`, and the upstream
   speed-shrink hop reproduces **byte-for-byte**.
@@ -152,11 +148,3 @@ The step-by-step record of how the artifact is built is:
 - **Public ranks need the live board.** Local scoring reproduces per-cell *scores*; the
   per-cell *ranks* (and thus the headline mean rank) come from the live competition.
 
----
-
-## License & attribution
-
-- Reproduction code in this repo: MIT ([`LICENSE`](LICENSE)).
-- The competition dataset and starting kit are the property of the competition organizers
-  under their own terms; this repo links to the official sources rather than redistributing
-  them. See [`NOTICE.md`](NOTICE.md).
