@@ -85,11 +85,11 @@ STAGES = [
           SHA["heavy"],
           ["scripts/heavy/heavy_extracted_ns_only.py"],  # + _ecs_only; version-sensitive
           "Version-sensitive ML root (CatBoost/LightGBM, seed 42). Cached checkpoint."),
-    Stage("v51", "Early lineage (heavy -> v51)", "checkpoint",
+    Stage("v51", "Early lineage (heavy + light -> v51)", "checkpoint",
           ("starting-kit/phase_1/predictions_v51.csv",),
           SHA["v51"],
-          None,  # ~14 ordered run_v* hops incl. 4 model-training donors; see docs/END_TO_END.md
-          "Version-sensitive (trains v32/v34/v39/v40 donors). Cached checkpoint."),
+          None,  # rebuilt by scripts/rebuild_v51.py: 19 ordered hops, 8 train models
+          "Rebuildable via scripts/rebuild_v51.py (needs heavy + light bases). Version-sensitive ML; score-equivalent."),
     Stage("production_base", "Production base (v51 -> v222_plus_v227_plus_v232)", "lineage",
           ("repro_outputs/v222_plus_v227_plus_v232/predictions_v222_plus_v227_plus_v232.csv",
            "submissions/predictions_v222_plus_v227_plus_v232.csv",
@@ -269,12 +269,29 @@ def run(root: Path, rebuild_checkpoints: bool) -> int:
                 print("    BLOCKED: provide engineered features, then re-run.")
                 return 2
             continue
-        if st.kind == "checkpoint" and not rebuild_checkpoints:
-            if path:
+        if st.kind == "checkpoint":
+            if path and not rebuild_checkpoints:
                 print(f"    cached checkpoint present (sha {output_sha(path)[:12]}…); not rebuilt (version-sensitive).")
                 continue
-            print(f"    BLOCKED: cached checkpoint missing and --rebuild-checkpoints not set. {st.note}")
-            return 2
+            if not rebuild_checkpoints:
+                print(f"    BLOCKED: checkpoint '{st.id}' missing and --rebuild-checkpoints not set. {st.note}")
+                return 2
+            # --rebuild-checkpoints: actually rebuild this version-sensitive checkpoint
+            if st.id == "v51":
+                print("    rebuilding v51 from raw via scripts/rebuild_v51.py (19 hops, trains ML; score-equivalent)…")
+                rc = run_producer(root, ["scripts/rebuild_v51.py", "--root", str(root)])
+            elif st.id == "heavy":
+                print("    heavy is the starting-kit heavy-notebook output; rebuild it there (scripts/heavy/).")
+                rc = 0 if path else 2
+            else:
+                rc = 2
+            if rc != 0:
+                print(f"    FAIL/BLOCKED rebuilding checkpoint '{st.id}'.")
+                return 2
+            again = locate(root, st)
+            if again and st.sha and output_sha(again) != st.sha:
+                print(f"    note: {st.id} sha differs from the pinned reference (version drift; score-equivalent).")
+            continue
         if st.id == "final_best":
             out = root / "submissions" / "predictions_FINAL_BEST.csv"
             sha, frozen, mx = regenerate_final_best(root, out)

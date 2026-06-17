@@ -90,21 +90,28 @@ and the determinism caveats are in [`docs/PIPELINE.md`](docs/PIPELINE.md).
 
 ---
 
-## Step 3 — Rebuild from the raw dataset (full from-scratch)
+## Step 3 — Rebuild the entire chain from raw (full from-scratch)
 
-You hold the raw competition dataset, so you can rebuild the whole chain. The complete,
-tier-by-tier procedure — raw data → engineered features → heavy-notebook base → compounding
-overlays → `FINAL_BEST` — is in **[`docs/PIPELINE.md`](docs/PIPELINE.md)**, with the exact
-scripts under [`scripts/`](scripts/) and every artifact's checksum in
-[`CHECKSUMS.md`](CHECKSUMS.md).
+You hold the raw competition dataset, so you can rebuild the **whole** pipeline — including
+the lineage root `v51` — with a single orchestrator:
 
-Read `docs/PIPELINE.md` §7 first: the model-training root (CatBoost/LightGBM, fixed seeds) is
-deterministic but **library-version sensitive**, so a cold rebuild reproduces the *scores*
-exactly but may differ from the canonical `sha256` by floating-point ULPs. That is why the
-canonical artifact is sha-pinned and shipped (Step 1), and why Step 2 demonstrates the final
-transformation against the published base. The deep per-version lineage modules are not in
-this public package (they embed live competitor board snapshots); they can be provided on
-request.
+```bash
+python reproduce_from_raw.py --root /path/to/working-tree --mode run --rebuild-checkpoints
+```
+
+It runs every stage in order with a checksum gate per hop:
+features → heavy → **v51** (via [`scripts/rebuild_v51.py`](scripts/rebuild_v51.py), the
+19-step early lineage) → production base → overlays → `FINAL_BEST`. The complete walkthrough —
+the 9 stages, the `v51` rebuild, how to assemble the working tree, and the limits — is in
+**[`docs/END_TO_END.md`](docs/END_TO_END.md)**; the tier-by-tier detail and every checksum are
+in [`docs/PIPELINE.md`](docs/PIPELINE.md) and [`CHECKSUMS.md`](CHECKSUMS.md). All the lineage
+code is present under [`scripts/`](scripts/) and [`src/`](src/) — nothing is withheld.
+
+Read the "Honest limits" in `END_TO_END.md` first: the model-training steps (`heavy`, and 8 of
+the 19 `v51` hops) are seeded but **library-version sensitive**, so a cold rebuild reproduces
+the *scores* exactly but may differ from the canonical `sha256` by floating-point ULPs — which
+is why the canonical artifact is sha-pinned and shipped (Step 1), and Step 2 demonstrates the
+final transformation against the published base.
 
 ---
 

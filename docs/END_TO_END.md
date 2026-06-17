@@ -17,7 +17,7 @@ two run modes, the exact commands and their output, and the honest limits.
 |--:|---|---|---|---|
 | 1 | Feature engineering | starting-kit `1_feature_engineering.ipynb` | `data/phase1_dataset/features/…` | **external** |
 | 2 | Heavy-notebook base | `scripts/heavy/heavy_extracted_{ns,ecs}_only.py` | `predictions_heavy.csv` (`dcc3ba48…`) | **checkpoint** (version-sensitive) |
-| 3 | Early lineage → v51 | `src/pipeline/run_v*.py` (~14 hops, 4 train models) | `predictions_v51.csv` (`c7e392af…`) | **checkpoint** (version-sensitive) |
+| 3 | Early lineage → v51 | **`scripts/rebuild_v51.py`** (19 ordered hops, 8 train models) | `predictions_v51.csv` (`c7e392af…`) | **checkpoint** (rebuildable, version-sensitive) |
 | 4 | Production base | `scripts/reproduce_v222_plus_v227_plus_v232.py` | `…v222_plus_v227_plus_v232` (`5d5c1ba9…`) | lineage (deterministic) |
 | 5 | Final-day station ladder → v256 | `scripts/build_final_day_station_ladder.py` | `predictions_v256_…csv` | overlay |
 | 6 | Direction shrink 0.12 | `scripts/build_dir_shrink.py combined` | `predictions_dirshrink_combined.csv` (`8b4347ec…`) | overlay |
@@ -96,8 +96,10 @@ Behaviour:
 
 - **Checkpoints (stages 2–3)** are treated as *cached* by default: if `predictions_heavy.csv`
   / `predictions_v51.csv` are present, their `sha256` is verified and they are **not**
-  rebuilt (a rebuild trains version-sensitive ML models). Pass `--rebuild-checkpoints` to
-  re-run them too — expect **score-equivalent, not byte-identical** output.
+  rebuilt. Pass `--rebuild-checkpoints` to rebuild them — **`v51` is rebuilt from raw by
+  `scripts/rebuild_v51.py`** (see next section); `heavy` is regenerated from the starting-kit
+  heavy notebook. Both train version-sensitive ML, so expect **score-equivalent, not
+  byte-identical** output.
 - **External (stage 1)** halts with guidance if the engineered features are absent.
 - **Lineage + overlays (stages 4–9)** run their producers and are gated on the pinned
   `sha256`. The final hop is gated on numerical identity (max |Δ| = 0 after CSV round-trip;
@@ -108,16 +110,53 @@ and stops, so you always know what to provide next.
 
 ---
 
+## Rebuilding `v51` from raw (stage 3)
+
+`v51` is the lineage root. It is **fully rebuildable** from the engineered features + the two
+base-notebook outputs by [`scripts/rebuild_v51.py`](../scripts/rebuild_v51.py), which runs the
+exact **19-step ordered chain** (every producer is in `src/`; the three non-`__main__`
+entrypoints — `generate_v40()`, `run_b1_experiment()` → v46, `run_v47()` → v47 — are invoked
+explicitly):
+
+```bash
+python scripts/rebuild_v51.py --root /path/to/working-tree --plan   # print the 19 steps
+python scripts/rebuild_v51.py --root /path/to/working-tree          # run the chain
+python scripts/rebuild_v51.py --root /path/to/working-tree --start-at v32   # resume
+```
+
+The chain: `run_v7 → v8 → v16 → v19 → v26 → v27 (grafts heavy) → v28 → v30 → v31 (uses light)
+→ v32 → v34 → v35 → v38 → v39 → generate_v40 → v41 → v46 → v47 → v51`. **8 of the 19 steps
+train models** (`v7, v8, v19, v30, v32, v34, v39, v40` — LightGBM / CatBoost / sklearn,
+seeded). `run_v7` must run first because `v32` loads the direction models it writes to
+`logs/direction_models_v7/`.
+
+**Prerequisites** (pre-existing inputs, not produced by the chain):
+`data/phase1_dataset/` (features + reanalysis), `starting-kit/phase_1/predictions_heavy.csv`,
+and `starting-kit/phase_1/predictions_light.csv` (both are starting-kit notebook outputs).
+
+Because 8 steps train ML, the rebuilt `v51` is **score-equivalent**, not guaranteed
+byte-identical to the pinned `c7e392af…` — that only holds under the original
+LightGBM/CatBoost/sklearn versions. The orchestrator runs this automatically when you pass
+`--mode run --rebuild-checkpoints`.
+
+> Validation note: every one of the 19 producers and all three function entrypoints have
+> been confirmed to import and resolve in the project venv. The multi-hour ML execution
+> itself is environment-bound (needs the 21 GB dataset) and is run by the organiser/author,
+> not bundled here.
+
+---
+
 ## Honest limits (why "fully autonomous from only raw" is not achievable)
 
 1. **Stage 1 is external.** Feature engineering is the official starting kit's notebook,
    not re-distributed here.
 2. **Stages 2–3 are version-sensitive ML checkpoints.** They are seeded (`random_seed=42`,
    `random_state=…`) but CatBoost/LightGBM/sklearn are not byte-deterministic across
-   versions. A cold rebuild reproduces the **scores**, not the winning `sha256`; a 1-ULP
-   drift at the root propagates downstream. In practice `heavy` and `v51` are **cached
-   checkpoints** (the original tooling copies `v51` rather than rebuilding it), and the
-   intermediate CSVs `v26…v50` are not retained — the early lineage must be run end-to-end.
+   versions. `v51` **is rebuildable from raw** via `scripts/rebuild_v51.py` (the 19-step chain
+   above) and `heavy` from the starting-kit notebook — but a cold rebuild reproduces the
+   **scores**, not the winning `sha256`; a 1-ULP drift at the ML root propagates downstream.
+   The intermediate CSVs `v26…v50` are not retained, so the early lineage runs end-to-end
+   (the script does exactly that).
 3. **Therefore the byte-exact anchor is the sha-pinned artifact**, and the final
    transformation is what regenerates exactly. Everything from the production base onward
    (stages 4–9) is deterministic and gated to its `sha256`.

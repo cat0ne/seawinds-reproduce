@@ -82,6 +82,7 @@ seawinds-reproduce/
 │   └── BASELINE_PROVENANCE.md     ← which lineage each of the 36 cells comes from
 ├── scripts/                       ← the runnable pipeline
 │   ├── heavy/                     ← raw → heavy-notebook base (frozen center)
+│   ├── rebuild_v51.py             ← raw + heavy + light → v51 (the 19-step early lineage)
 │   ├── reproduce_v222_plus_v227_plus_v232.py   ← v51 → production base (deep-lineage driver)
 │   └── build_*.py                 ← production base → v256 → … → FINAL_BEST (overlay builders)
 └── src/                           ← the engine the lineage imports (experiments, pipeline, models, scoring)
