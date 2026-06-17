@@ -382,7 +382,10 @@ def generate_v19():
 
     dir_offsets = compute_station_offsets()
 
-    train_station_speed_models()
+    if not any(STATION_SPEED_DIR.rglob("model.pkl")):  # repro: skip retrain if frozen models present
+        train_station_speed_models()
+    else:
+        print(f"[cache] reusing frozen station-speed models in {STATION_SPEED_DIR}")
 
     baseline = load_baseline()
     bl_grid = baseline[baseline["type"] == "grid"].copy()

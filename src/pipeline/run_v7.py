@@ -265,5 +265,8 @@ def generate_v7():
 
 
 if __name__ == "__main__":
-    train_per_horizon_direction()
+    if not (SAVE_DIR / "summary.csv").exists():  # repro: skip retrain if frozen models present
+        train_per_horizon_direction()
+    else:
+        print(f"[cache] reusing frozen direction models in {SAVE_DIR}")
     generate_v7()

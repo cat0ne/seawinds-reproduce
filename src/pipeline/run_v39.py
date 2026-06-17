@@ -10,6 +10,7 @@ only ECS station direction rows:
 
 from __future__ import annotations
 
+import pickle
 from pathlib import Path
 
 import pandas as pd
@@ -17,6 +18,30 @@ import pandas as pd
 from src.data.paths import PROJECT_ROOT
 from src.experiments.track_i_v38_residual_direction import fit_models, predict_inference_overrides
 from src.pipeline.pipeline_utils import save_submission
+
+
+def _cached_models(cache_path: Path, fit_fn, label: str):
+    """repro: deterministic model cache — load frozen models if present, else fit + save.
+
+    Makes repeated runs (and the v39/v40 pair, which would otherwise fit twice)
+    byte-identical. Failures are non-fatal (falls back to fitting)."""
+    if cache_path.exists():
+        try:
+            with cache_path.open("rb") as fh:
+                models = pickle.load(fh)
+            print(f"  [cache] loaded {label} from {cache_path}")
+            return models
+        except Exception as exc:  # noqa: BLE001
+            print(f"  [cache] load failed ({exc}); refitting {label}")
+    models = fit_fn()
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        with cache_path.open("wb") as fh:
+            pickle.dump(models, fh)
+        print(f"  [cache] saved {label} -> {cache_path}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [cache] save failed ({exc}); continuing un-cached")
+    return models
 
 
 Q_COLS = ["q05", "q50", "q95"]
@@ -110,7 +135,8 @@ def _generate(version: str, targets: set[tuple[str, int]]) -> None:
     print("=" * 60)
 
     base = _load_predictions_csv(_phase1_path("predictions_v38.csv"))
-    models = fit_models()
+    models = _cached_models(PROJECT_ROOT / "logs" / "track_i_v39" / "models.pkl",
+                            fit_models, "Track I v39/v40")
     overrides = predict_inference_overrides(models, targets=targets)
     print(f"  Override rows: {len(overrides):,}")
 

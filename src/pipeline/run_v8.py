@@ -366,5 +366,8 @@ def generate_v8():
 
 
 if __name__ == "__main__":
-    train_speed_models()
+    if not any(SAVE_DIR.rglob("model.pkl")):  # repro: skip retrain if frozen models present
+        train_speed_models()
+    else:
+        print(f"[cache] reusing frozen speed models in {SAVE_DIR}")
     generate_v8()
