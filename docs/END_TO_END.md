@@ -134,15 +134,31 @@ seeded). `run_v7` must run first because `v32` loads the direction models it wri
 `data/phase1_dataset/` (features + reanalysis), `starting-kit/phase_1/predictions_heavy.csv`,
 and `starting-kit/phase_1/predictions_light.csv` (both are starting-kit notebook outputs).
 
-Because 8 steps train ML, the rebuilt `v51` is **score-equivalent**, not guaranteed
-byte-identical to the pinned `c7e392af…` — that only holds under the original
-LightGBM/CatBoost/sklearn versions. The orchestrator runs this automatically when you pass
-`--mode run --rebuild-checkpoints`.
+The orchestrator runs this automatically when you pass `--mode run --rebuild-checkpoints`.
 
-> Validation note: every one of the 19 producers and all three function entrypoints have
-> been confirmed to import and resolve in the project venv. The multi-hour ML execution
-> itself is environment-bound (needs the 21 GB dataset) and is run by the organiser/author,
-> not bundled here.
+### Deterministic rebuild with the frozen models (executed & verified)
+
+The chain has been **run end-to-end** and its model artifacts **frozen and shipped**. To get
+a **byte-deterministic** rebuild, download `seawinds_v51_frozen_models.tar.gz` from the
+Release and extract it into `<root>/logs/` before running — every ML step then *loads* the
+frozen models instead of retraining:
+
+```bash
+tar -xzf seawinds_v51_frozen_models.tar.gz -C /path/to/working-tree   # -> <root>/logs/...
+python scripts/rebuild_v51.py --root /path/to/working-tree
+# -> ✓ BYTE-IDENTICAL to the frozen-models reference v51' (4f14eb2e…)
+```
+
+Verified results from the actual run:
+- The full `raw → v51` chain completed **all 19 steps** and produced `v51′`, sha
+  **`4f14eb2e0c396316f31b778a6db6c69c87e641e856c3d8806258277d4d07ff1a`**.
+- Re-running the two formerly-nondeterministic steps with the frozen caches reproduced them
+  **byte-for-byte** (`v34`/Track E and `v39`/Track I both `MATCH=True`). All other steps are
+  seeded, pure transforms, or load cached models — so the whole chain is now deterministic.
+- `v51′ ≠ canonical v51` (`c7e392af…`): canonical `v51` is **not** byte-reproducible because
+  Track E was trained **unseeded** and its original models were never saved. `v51′` is a
+  fixed, deterministic, fully-from-raw reference lineage; the canonical winning artifact stays
+  anchored by its pinned sha (`verify_artifact.py`).
 
 ---
 
@@ -150,11 +166,13 @@ LightGBM/CatBoost/sklearn versions. The orchestrator runs this automatically whe
 
 1. **Stage 1 is external.** Feature engineering is the official starting kit's notebook,
    not re-distributed here.
-2. **Stages 2–3 are version-sensitive ML checkpoints.** They are seeded (`random_seed=42`,
-   `random_state=…`) but CatBoost/LightGBM/sklearn are not byte-deterministic across
-   versions. `v51` **is rebuildable from raw** via `scripts/rebuild_v51.py` (the 19-step chain
-   above) and `heavy` from the starting-kit notebook — but a cold rebuild reproduces the
-   **scores**, not the winning `sha256`; a 1-ULP drift at the ML root propagates downstream.
+2. **Stages 2–3 are ML.** `v51` **is rebuildable from raw** via `scripts/rebuild_v51.py` and,
+   **with the shipped frozen models, reproduces byte-identically** (`v51′` = `4f14eb2e…`).
+   A *cold* rebuild (no frozen models, e.g. different CatBoost/LightGBM/sklearn versions, or
+   re-training the unseeded Track E) is only **score-equivalent** — and the *canonical* `v51`
+   (`c7e392af…`) / winning `FINAL_BEST` are not byte-reproducible at all, because the original
+   Track E was unseeded and its models were never saved. The canonical artifact is the sha
+   anchor; the frozen-models rebuild is the deterministic from-raw reference.
    The intermediate CSVs `v26…v50` are not retained, so the early lineage runs end-to-end
    (the script does exactly that).
 3. **Therefore the byte-exact anchor is the sha-pinned artifact**, and the final

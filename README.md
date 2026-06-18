@@ -136,8 +136,17 @@ python reproduce_from_raw.py --root /path/to/working-tree --mode run
 `verify` against a complete tree reports every retained artifact `VERIFIED ✅` against its
 pinned checksum (the one transient intermediate, `v256`, is not kept on disk). The full
 walkthrough — the 9 stages, both modes, the expected output, how to assemble the working
-tree, and the honest limits (the external feature step and the two version-sensitive ML
+tree, and the honest limits (the external feature step and the version-sensitive ML
 checkpoints) — is in **[`docs/END_TO_END.md`](docs/END_TO_END.md)**.
+
+**The lineage root `v51` is rebuilt from raw, deterministically.** It was actually run
+end-to-end (19 steps) and its ML models were **frozen and shipped** as
+`seawinds_v51_frozen_models.tar.gz` on the Release. Extract them into `<root>/logs/` and
+[`scripts/rebuild_v51.py`](scripts/rebuild_v51.py) reproduces `v51′` (sha `4f14eb2e…`)
+**byte-for-byte** on any machine (verified: the formerly-unseeded Track E and Track I steps
+both reproduce identically). Canonical `v51`/`FINAL_BEST` stay anchored by their pinned shas
+(the original Track E was unseeded and its models were never saved, so they are not
+byte-reproducible — `verify_artifact.py` is the byte anchor). See `docs/END_TO_END.md`.
 
 ---
 

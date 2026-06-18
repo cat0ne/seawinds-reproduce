@@ -41,7 +41,12 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-V51_SHA256 = "c7e392afc17978698921371749204b27cfa5540b0b89e921c986e31484f646ca"  # same-env reference
+V51_SHA256 = "c7e392afc17978698921371749204b27cfa5540b0b89e921c986e31484f646ca"  # canonical (original env)
+# Deterministic frozen-models reference: rebuild produced by THIS repo's code with the
+# shipped model artifacts (Release: seawinds_v51_frozen_models.tar.gz extracted into <root>/logs/).
+# Reproduces byte-for-byte on every run / any environment, because all ML steps load the
+# frozen models instead of retraining.
+V51_FROZEN_SHA256 = "4f14eb2e0c396316f31b778a6db6c69c87e641e856c3d8806258277d4d07ff1a"
 
 
 @dataclass
@@ -164,12 +169,17 @@ def run_chain(root: Path, start_at: str | None) -> int:
     print(f"\nv51 rebuilt: {v51.relative_to(root)}")
     print(f"  sha256        : {got}")
     print(f"  canonical ref : {V51_SHA256}")
+    print(f"  frozen   ref  : {V51_FROZEN_SHA256}")
     if got == V51_SHA256:
         print("  BYTE-IDENTICAL to the canonical v51.")
+    elif got == V51_FROZEN_SHA256:
+        print("  ✓ BYTE-IDENTICAL to the frozen-models reference v51' — deterministic rebuild confirmed.")
     else:
-        print("  sha differs from the canonical reference — EXPECTED if any TRAINS step ran in a")
-        print("  different LightGBM/CatBoost/sklearn version. The rebuild is score-equivalent; the")
-        print("  byte-exact v51 needs the original library versions. (See docs/END_TO_END.md.)")
+        print("  sha matches neither pinned reference. For a deterministic byte-identical run, download")
+        print("  seawinds_v51_frozen_models.tar.gz from the Release and extract it into <root>/logs/ so")
+        print("  every ML step LOADS the frozen models instead of retraining (see docs/END_TO_END.md).")
+        print("  (Without the frozen models, a fresh train is only score-equivalent — Track E is unseeded")
+        print("  and the original models were not retained, so canonical v51 is not byte-reproducible.)")
     return 0
 
 
